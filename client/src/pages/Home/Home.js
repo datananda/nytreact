@@ -3,6 +3,7 @@ import Nav from "../../components/Nav";
 import { Input, FormBtn } from "../../components/Form";
 import NYT_API from "../../utils/NYT_API";
 import { ListItem } from "../../components/List";
+const moment = require("moment");
 
 class Home extends Component {
   state = {
@@ -25,10 +26,7 @@ class Home extends Component {
     if (this.state.startYear) { query += `&begin_date=${this.state.startYear}0101` };
     if (this.state.endYear) { query += `&end_date=${this.state.endYear}1231` };
     NYT_API.search(query)
-      .then(res => {
-        console.log(res.data.response.docs);
-        this.setState({ results: res.data.response.docs })
-      })
+      .then(res => this.setState({ results: res.data.response.docs.slice(0,5) }))
       .catch(err => console.log(err));
   }
 
@@ -83,8 +81,11 @@ class Home extends Component {
                 <ul className="list-group list-group-flush">
                   {this.state.results.map(result => (
                     <ListItem
-
+                      key={result._id}
+                      id={result._id}
                       title={result.headline.main}
+                      url={result.web_url}
+                      date={moment(result.pub_date).format("MMMM D, YYYY")}
                     />
                   ))}
                 </ul>
