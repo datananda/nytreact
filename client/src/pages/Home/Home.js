@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Nav from "../../components/Nav";
 import { Input, FormBtn } from "../../components/Form";
 import NYT_API from "../../utils/NYT_API";
+import API from "../../utils/API";
 import { ListItem } from "../../components/List";
 const moment = require("moment");
 
@@ -13,6 +14,14 @@ class Home extends Component {
     results: []
   }
 
+  saveArticle = idToSave => {
+    const { id, ...articleData } = this.state.results.filter(article => article.id === idToSave)[0];
+    console.log(articleData);
+    API.saveArticle( articleData )
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
+  }
+  
   handleInputChange = event => {
     const { name, value } = event.target;
     this.setState({
@@ -26,7 +35,18 @@ class Home extends Component {
     if (this.state.startYear) { query += `&begin_date=${this.state.startYear}0101` };
     if (this.state.endYear) { query += `&end_date=${this.state.endYear}1231` };
     NYT_API.search(query)
-      .then(res => this.setState({ results: res.data.response.docs.slice(0,5) }))
+      .then(res => {
+        const results = res.data.response.docs.slice(0,5).map(result => {
+          const slimResult = {
+            id: result._id,
+            title: result.headline.main,
+            url: result.web_url,
+            date: result.pub_date
+          }
+          return slimResult;
+        });
+        this.setState({ results });
+      })
       .catch(err => console.log(err));
   }
 
@@ -79,13 +99,13 @@ class Home extends Component {
                   Results
                 </div>
                 <ul className="list-group list-group-flush">
-                  {this.state.results.map(result => (
+                  {this.state.results.map(article => (
                     <ListItem
-                      key={result._id}
-                      id={result._id}
-                      title={result.headline.main}
-                      url={result.web_url}
-                      date={moment(result.pub_date).format("MMMM D, YYYY")}
+                      key={article.id}
+                      title={article.title}
+                      url={article.url}
+                      date={moment(article.date).format("MMMM D, YYYY")}
+                      onClick={() => this.saveArticle(article.id)}
                     />
                   ))}
                 </ul>
