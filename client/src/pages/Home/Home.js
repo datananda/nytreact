@@ -3,7 +3,7 @@ import Nav from "../../components/Nav";
 import { Input, FormBtn } from "../../components/Form";
 import NYT_API from "../../utils/NYT_API";
 import API from "../../utils/API";
-import { ListItem } from "../../components/List";
+import { ListItem, ListBtn } from "../../components/List";
 const moment = require("moment");
 
 class Home extends Component {
@@ -17,11 +17,11 @@ class Home extends Component {
   saveArticle = idToSave => {
     const { id, ...articleData } = this.state.results.filter(article => article.id === idToSave)[0];
     console.log(articleData);
-    API.saveArticle( articleData )
+    API.saveArticle(articleData)
       .then(res => console.log(res))
       .catch(err => console.log(err));
   }
-  
+
   handleInputChange = event => {
     const { name, value } = event.target;
     this.setState({
@@ -36,7 +36,7 @@ class Home extends Component {
     if (this.state.endYear) { query += `&end_date=${this.state.endYear}1231` };
     NYT_API.search(query)
       .then(res => {
-        const results = res.data.response.docs.slice(0,5).map(result => {
+        const results = res.data.response.docs.slice(0, 5).map(result => {
           const slimResult = {
             id: result._id,
             title: result.headline.main,
@@ -105,8 +105,12 @@ class Home extends Component {
                       title={article.title}
                       url={article.url}
                       date={moment(article.date).format("MMMM D, YYYY")}
-                      onClick={() => this.saveArticle(article.id)}
-                    />
+                    >
+                      <ListBtn
+                        onClick={() => this.saveArticle(article.id)}
+                        text="Save"
+                      />
+                    </ListItem>
                   ))}
                 </ul>
               </div>
