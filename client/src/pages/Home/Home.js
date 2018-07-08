@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import Nav from "../../components/Nav";
+import Card from "../../components/Card";
 import { Input, FormBtn } from "../../components/Form";
 import NYT_API from "../../utils/NYT_API";
 import API from "../../utils/API";
 import { ListItem, ListBtn } from "../../components/List";
+import { Container, Row, Col } from "../../components/Grid";
 const moment = require("moment");
 
 class Home extends Component {
@@ -16,7 +18,6 @@ class Home extends Component {
 
   saveArticle = idToSave => {
     const { id, ...articleData } = this.state.results.filter(article => article.id === idToSave)[0];
-    console.log(articleData);
     API.saveArticle(articleData)
       .then(res => console.log(res))
       .catch(err => console.log(err));
@@ -54,69 +55,61 @@ class Home extends Component {
     return (
       <div>
         <Nav />
-        <div className="container">
-          <div className="row">
-            <div className="col">
-              <div className="card">
-                <div className="card-header">
-                  Article Search
-                </div>
-                <div className="card-body">
-                  <form>
-                    <Input
-                      value={this.state.topic}
-                      onChange={this.handleInputChange}
-                      displayName="Topic"
-                      name="topic"
-                      placeholder="Enter a search topic"
-                    />
-                    <Input
-                      value={this.state.startYear}
-                      onChange={this.handleInputChange}
-                      displayName="Start Year"
-                      name="startYear"
-                      placeholder="Enter a start year for your search"
-                    />
-                    <Input
-                      value={this.state.endYear}
-                      onChange={this.handleInputChange}
-                      displayName="End Year"
-                      name="endYear"
-                      placeholder="Enter an end year for your search"
-                    />
-                    <FormBtn
-                      onClick={this.handleFormSubmit}
-                    >Search</FormBtn>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col">
-              <div className="card">
-                <div className="card-header">
-                  Results
-                </div>
-                <ul className="list-group list-group-flush">
-                  {this.state.results.map(article => (
-                    <ListItem
-                      key={article.id}
-                      title={article.title}
-                      url={article.url}
-                      date={moment(article.date).format("MMMM D, YYYY")}
-                    >
-                      <ListBtn
-                        onClick={() => this.saveArticle(article.id)}
-                        text="Save"
-                      />
-                    </ListItem>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Container>
+          <Row>
+            <Col size="lg-4">
+              <Card header="Article Search" cardBody="True">
+                <form>
+                  <Input
+                    value={this.state.topic}
+                    onChange={this.handleInputChange}
+                    displayName="Topic"
+                    name="topic"
+                    placeholder="Article topic"
+                  />
+                  <Input
+                    value={this.state.startYear}
+                    onChange={this.handleInputChange}
+                    displayName="Start Year"
+                    name="startYear"
+                    placeholder="1990"
+                  />
+                  <Input
+                    value={this.state.endYear}
+                    onChange={this.handleInputChange}
+                    displayName="End Year"
+                    name="endYear"
+                    placeholder="2000"
+                  />
+                  <FormBtn
+                    onClick={this.handleFormSubmit}
+                  >Search</FormBtn>
+                </form>
+              </Card>
+            </Col>
+            <Col size="lg-8">
+              {this.state.results.length > 0 &&
+                <Card header="Results">
+                  <ul className="list-group list-group-flush">
+                    {this.state.results.map(article => (
+                      <ListItem
+                        key={article.id}
+                        title={article.title}
+                        url={article.url}
+                        date={moment(article.date).format("MMMM D, YYYY")}
+                      >
+                        <ListBtn
+                          onClick={() => this.saveArticle(article.id)}
+                          text="Save"
+                        />
+                      </ListItem>
+                    ))}
+                  </ul>
+                </Card>
+              }
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }

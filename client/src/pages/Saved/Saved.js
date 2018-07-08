@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import Nav from "../../components/Nav";
+import Card from "../../components/Card";
 import API from "../../utils/API";
 import { ListItem, ListBtn } from "../../components/List";
+import { Container, Row, Col } from "../../components/Grid";
 const moment = require("moment");
 
 class Saved extends Component {
@@ -20,8 +22,8 @@ class Saved extends Component {
   }
 
   deleteArticle = idToDelete => {
-    API.deleteArticle( idToDelete )
-      .then(res => console.log(res))
+    API.deleteArticle(idToDelete)
+      .then(res => this.getArticles())
       .catch(err => console.log(err));
   }
 
@@ -29,13 +31,10 @@ class Saved extends Component {
     return (
       <div>
         <Nav />
-        <div className="container">
-          <div className="row">
-            <div className="col">
-              <div className="card">
-                <div className="card-header">
-                  Saved Articles
-                </div>
+        <Container>
+          <Row>
+            <Col size="12">
+              <Card header="Saved Articles">
                 <ul className="list-group list-group-flush">
                   {this.state.articles.map(article => (
                     <ListItem
@@ -51,10 +50,10 @@ class Saved extends Component {
                     </ListItem>
                   ))}
                 </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }
